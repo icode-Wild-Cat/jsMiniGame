@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>弹球游戏</title>
+  <script src="https://code.jquery.com/jquery-2.1.0.js"></script>
+  <style>
+    .canv {
+      position: absolute;
+      left: 200px;
+      top: 200px;
+    }
+  </style>
+</head>
+<body>
+  
+  <canvas class="canv" width="1000" height="1000" ></canvas>
+  
+  <script>
+    const canv = document.querySelector(".canv")
+    const ctx = canv.getContext('2d')
+    // 建立一个对象ball
+    const ball = {
+      //初始位置
+      x: 100,
+      y: 100,
+      // 初始的水平和垂直速度
+      xSpeed: -Math.random()*10,
+      ySpeed: +Math.random()*10,
+
+      draw() {
+      ctx.beginPath()
+      ctx.arc(this.x,this.y,10,0,Math.PI*2,false)
+      ctx.fill()
+    },
+
+      move() {
+      this.x += this.xSpeed
+      this.y += this.ySpeed
+    },
+
+
+      // 边界判断
+    checkCanvas(panelStart,panelEnd){
+      if(this.x < 10 || this.x > 390){
+        this.xSpeed = -this.xSpeed
+      }
+      if(this.y < 10){
+        this.ySpeed = -this.ySpeed
+      }
+      if(this.y > 380){
+        if(this.x > panel.x && this.x < panel.x + panel.xSize){
+          this.ySpeed = -this.ySpeed
+        }else {
+          alert(`Game over!!!
+
+          Refresh to start new!!!`)
+        }
+      }
+    }
+    }
+    
+    setInterval(()=>{
+      ctx.clearRect(0,0,400,400)
+      ball.draw()
+      panel.draw()
+      ball.move()
+      ball.checkCanvas(panel.x,panel.x+panel.xSize)
+      ctx.strokeRect(0,0,400,400)
+    },30)
+
+    // 增加挡板
+    // 建立一个挡板对象
+    const panel = {
+      x: 175,
+      y: 390,
+      xSize: 50,
+      ySize: 5,
+      draw(){
+        ctx.fillRect(this.x,this.y,this.xSize,this.ySize)
+      }
+    }
+
+    // 键盘交互
+    $("body").keydown(function (event) {
+      // console.log(event.keyCode)
+      if(event.keyCode === 65){
+        panel.x -= 10 
+        if(panel.x <= 0){
+          panel.x = 0
+        }
+      }
+      if(event.keyCode === 68){
+        panel.x += 10 
+        if(panel.x >= 350){
+          panel.x = 350
+        }
+      }
+    })
+    // ######## over ##########
+
+    
+  </script>
+</body>
+</html>

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>五子棋</title>
+<script src="https://code.jquery.com/jquery-2.1.0.js"></script>
+  <style lang="css">
+    * {
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <canvas class="canvas" width="400" height="400"></canvas>
+  </div>
+  <script>
+    const canv = document.querySelector('.canvas')
+    const ctx = canv.getContext('2d')
+
+    //绘制线条
+    // ctx.strokeStyle = 'red'
+    // ctx.beginPath()//初始化这种路径形式的绘图方式
+    // ctx.moveTo(10,10)
+    // ctx.lineTo(60,60)
+    // ctx.moveTo(60,10)
+    // ctx.lineTo(10,60)
+    // ctx.stroke()//将绘制的内容显示出来
+    // 填充路径
+    // stroke只显示线条，而fill会将线条围起来的区域按照设定的填充颜色涂满并显示。比如我们画一个三角形 
+
+    // 绘制圆弧和圆：arc
+    // ctx.beginPath()
+    // ctx.arc(50,50,30,0,Math.PI*2,false)
+    // 第一、第二个参数是圆心坐标；第三个参数是圆的半径；第四个参数是圆弧的起始角度，0°的位置是3点钟的方向；第五个参数是圆弧的截止角度，JavaScript中用数学中的PI来表示角度，PI对应的就是180°，PI*2就是360°；最后一个参数是指圆弧的旋转方向，false是指顺时针
+    // ctx.stroke()
+
+    // 绘制棋盘
+    // 18*18的20px*20px的棋盘
+    ctx.beginPath()
+    for(let i=0;i<19;i++){
+      ctx.moveTo(10+i*20,10)
+      ctx.lineTo(10+i*20,370)
+      ctx.moveTo(10,10+20*i)
+      ctx.lineTo(370,10+20*i)
+    }
+    ctx.stroke()
+
+    // 用数组记录棋盘落子情况
+    var matrix = [
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    ]
+
+    var winFlag//赢的标志
+    var qizi = true//黑白棋子（true黑子，false位白子）
+    var mtxPosX,mtxPosY//保存棋子在数组中的位置，这两个变量的赋值放在棋子坐标的赋值中
+    // 鼠标交互
+    $(".canvas").click(function(event) {
+      var arcPosX,arcPosY
+      for(let x=0;x<19;x++){
+        if(Math.abs(event.offsetX - (10+x*20))<10){
+          arcPosX = 10+x*20
+          mtxPosX = x
+        }
+        if(Math.abs(event.offsetY - (10+x*20))<10){
+          arcPosY = 10+x*20
+          mtxPosY = x
+        }
+      }
+     
+      if(qizi){
+        ctx.beginPath()
+        ctx.arc(arcPosX,arcPosY,10,0,Math.PI*2,false)
+        ctx.fill()
+        matrix[mtxPosY][mtxPosX] = 1 //黑子为1
+      }else{
+        ctx.lineWidth = 3
+        ctx.beginPath()
+        ctx.moveTo(arcPosX+8,arcPosY-8)
+        ctx.lineTo(arcPosX-8,arcPosY+8)
+        ctx.moveTo(arcPosX-8,arcPosY-8)
+        ctx.lineTo(arcPosX+8,arcPosY+8)
+        ctx.stroke()
+        matrix[mtxPosY][mtxPosX] = 2 //白子为2
+      }
+      qizi = !qizi
+
+      // 判断获胜
+      if(matrix[mtxPosY-1][mtxPosX] == matrix[mtxPosY][mtxPosX]){
+        if(matrix[mtxPosY-2][mtxPosX] == matrix[mtxPosY][mtxPosX]){
+          if(matrix[mtxPosY-3][mtxPosX] == matrix[mtxPosY][mtxPosX]){
+            if(matrix[mtxPosY-4][mtxPosX] == matrix[mtxPosY][mtxPosX]){
+              winFlag = true
+            }
+            else{
+              if(matrix[mtxPosY+1][mtxPosX] != matrix[mtxPosY][mtxPosX]){
+                winFlag = false
+              }
+              else {
+                winFlag = true
+              }
+            }
+          }
+          else {
+            for(let i=0;i<2;i++){
+              if(matrix[mtxPosY+i+1][mtxPosX] != matrix[mtxPosY][mtxPosX]){
+                winFlag = false
+                break
+              }
+              else {
+                winFlag = true
+              }
+            }
+          }
+        }
+        else {
+          for(let i=0;i<3;i++){
+            if(matrix[mtxPosY+i+1][mtxPosX] != matrix[mtxPosY][mtxPosX]){
+                winFlag = false
+                break
+              }
+              else {
+                winFlag = true
+              }
+          }
+        }
+      }
+      else {
+        for(let i=0;i<4;i++){
+          if(matrix[mtxPosY+i+1][mtxPosX] != matrix[mtxPosY][mtxPosX]){
+                winFlag = false
+                break
+              }
+              else {
+                winFlag = true
+              }
+        }
+      }
+    
+    if(matrix[mtxPosY][mtxPosX-1] == matrix[mtxPosY][mtxPosX]){
+        if(matrix[mtxPosY][mtxPosX-2] == matrix[mtxPosY][mtxPosX]){
+          if(matrix[mtxPosY][mtxPosX-3] == matrix[mtxPosY][mtxPosX]){
+            if(matrix[mtxPosY][mtxPosX-4] == matrix[mtxPosY][mtxPosX]){
+              winFlag = true
+            }
+            else{
+              if(matrix[mtxPosY][mtxPosX+1] != matrix[mtxPosY][mtxPosX]){
+                winFlag = false
+              }
+              else {
+                winFlag = true
+              }
+            }
+          }
+          else {
+            for(let i=0;i<2;i++){
+              if(matrix[mtxPosY][mtxPosX+i+1] != matrix[mtxPosY][mtxPosX]){
+                winFlag = false
+                break
+              }
+              else {
+                winFlag = true
+              }
+            }
+          }
+        }
+        else {
+          for(let i=0;i<3;i++){
+            if(matrix[mtxPosY][mtxPosX+i+1] != matrix[mtxPosY][mtxPosX]){
+                winFlag = false
+                break
+              }
+              else {
+                winFlag = true
+              }
+          }
+        }
+      }
+      else {
+        for(let i=0;i<4;i++){
+          if(matrix[mtxPosY][mtxPosX+i+1] != matrix[mtxPosY][mtxPosX]){
+                winFlag = false
+                break
+              }
+              else {
+                winFlag = true
+              }
+        }
+      }
+
+      if(matrix[mtxPosY-1][mtxPosX-1] == matrix[mtxPosY][mtxPosX]){
+        if(matrix[mtxPosY-2][mtxPosX-2] == matrix[mtxPosY][mtxPosX]){
+          if(matrix[mtxPosY-3][mtxPosX-3] == matrix[mtxPosY][mtxPosX]){
+            if(matrix[mtxPosY-4][mtxPosX-4] == matrix[mtxPosY][mtxPosX]){
+              winFlag = true
+            }
+            else{
+              if(matrix[mtxPosY+1][mtxPosX+1] != matrix[mtxPosY][mtxPosX]){
+                winFlag = false
+              }
+              else {
+                winFlag = true
+              }
+            }
+          }
+          else {
+            for(let i=0;i<2;i++){
+              if(matrix[mtxPosY+i+1][mtxPosX+i+1] != matrix[mtxPosY][mtxPosX]){
+                winFlag = false
+                break
+              }
+              else {
+                winFlag = true
+              }
+            }
+          }
+        }
+        else {
+          for(let i=0;i<3;i++){
+            if(matrix[mtxPosY+i+1][mtxPosX+i+1] != matrix[mtxPosY][mtxPosX]){
+                winFlag = false
+                break
+              }
+              else {
+                winFlag = true
+              }
+          }
+        }
+      }
+      else {
+        for(let i=0;i<4;i++){
+          if(matrix[mtxPosY+i+1][mtxPosX+i+1] != matrix[mtxPosY][mtxPosX]){
+                winFlag = false
+                break
+              }
+              else {
+                winFlag = true
+              }
+        }
+      }
+
+      if(matrix[mtxPosY-1][mtxPosX+1] == matrix[mtxPosY][mtxPosX]){
+        if(matrix[mtxPosY-2][mtxPosX+2] == matrix[mtxPosY][mtxPosX]){
+          if(matrix[mtxPosY-3][mtxPosX+3] == matrix[mtxPosY][mtxPosX]){
+            if(matrix[mtxPosY-4][mtxPosX+4] == matrix[mtxPosY][mtxPosX]){
+              winFlag = true
+            }
+            else{
+              if(matrix[mtxPosY+1][mtxPosX-1] != matrix[mtxPosY][mtxPosX]){
+                winFlag = false
+              }
+              else {
+                winFlag = true
+              }
+            }
+          }
+          else {
+            for(let i=0;i<2;i++){
+              if(matrix[mtxPosY+i+1][mtxPosX-i+1] != matrix[mtxPosY][mtxPosX]){
+                winFlag = false
+                break
+              }
+              else {
+                winFlag = true
+              }
+            }
+          }
+        }
+        else {
+          for(let i=0;i<3;i++){
+            if(matrix[mtxPosY+i+1][mtxPosX-i+1] != matrix[mtxPosY][mtxPosX]){
+                winFlag = false
+                break
+              }
+              else {
+                winFlag = true
+              }
+          }
+        }
+      }
+      else {
+        for(let i=0;i<4;i++){
+          if(matrix[mtxPosY+i+1][mtxPosX-i+1] != matrix[mtxPosY][mtxPosX]){
+                winFlag = false
+                break
+              }
+              else {
+                winFlag = true
+              }
+        }
+      }
+
+
+
+
+
+
+      if(winFlag){
+        if(matrix[mtxPosY][mtxPosX] === 1){
+          alert('圈win，请刷新重新比赛')
+        }else {
+          alert('叉win，请刷新重新比赛')
+        }
+      }
+
+    })
+
+
+
+  
+
+
+
+
+
+  </script>
+</body>
+</html>

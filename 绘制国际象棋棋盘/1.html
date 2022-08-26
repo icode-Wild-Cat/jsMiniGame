@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>国际象棋棋盘</title>
+  <style>
+   .box {
+     width: 1000px;
+     height: 1000px;
+     border: 1px solid red;
+   }
+  </style>
+</head>
+<body>
+  <div class="box">
+  <canvas class="canvas"></canvas>
+  </div>
+  <script>
+    const canvas = document.querySelector('.canvas')
+    const ctx = canvas.getContext('2d')
+    for(var y=0;y<4;y++){
+      for(var x=0;x<4;x++){
+        ctx.fillRect(x*80,y*80,40,40)
+        ctx.fillRect(x*80+40,y*80+40,40,40)
+        ctx.strokeRect(x*80+40,y*80,40,40)
+        ctx.strokeRect(x*80,y*80+40,40,40)
+      }
+    }
+  </script>
+</body>
+</html>
